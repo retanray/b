@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Bootstrap 4 Blog Template For Developers</title>
+    <title>Sample Site</title>
     <!-- Meta -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -19,7 +19,7 @@
 </head>
 <body>
 <header class="header text-center">
-    <h1 class="blog-name pt-lg-4 mb-0"><a href="index.html">Anthony's Blog</a></h1>
+    <h1 class="blog-name pt-lg-4 mb-0"><a href="index.html">H's Blog</a></h1>
 
     <nav class="navbar navbar-expand-lg navbar-dark" >
 

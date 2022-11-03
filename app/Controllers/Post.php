@@ -50,9 +50,15 @@ class Post extends BaseController
         ]);
       }
 
-      $model->update($post_id, $this->request->getPost());
-
-      $this->response->redirect("/post/show/$post_id");
+      $isSuccess = $model->update($post_id, $this->request->getPost());
+      if ($isSuccess){
+          $this->response->redirect("/post/show/$post_id");
+      }else{
+          return view("/post/create", [
+              'post_data' => $this->request->getPost(),
+              'errors' => $model->errors()
+          ]);
+      }
     }
 
     public function delete(){
