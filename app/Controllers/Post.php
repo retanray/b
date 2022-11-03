@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Models\Posts;
+use Michelf\Markdown;
 
 class Post extends BaseController
 {
@@ -13,7 +14,9 @@ class Post extends BaseController
       }
 
       $model = new Posts();
-      $post_id = $model->insert($this->request->getPost());
+      //$post_id = $model->insert($this->request->getPost());
+      $data = $this->add_input_markdown();
+      $post_id = $model->insert($data);
 
       if($post_id) {
         $this->response->redirect("/post/show/$post_id");
@@ -50,7 +53,9 @@ class Post extends BaseController
         ]);
       }
 
-      $isSuccess = $model->update($post_id, $this->request->getPost());
+      //$isSuccess = $model->update($post_id, $this->request->getPost());
+      $data = $this->add_input_markdown();
+      $isSuccess = $model->update($post_id, $data);
       if ($isSuccess){
           $this->response->redirect("/post/show/$post_id");
       }else{
@@ -89,5 +94,16 @@ class Post extends BaseController
           'post_list' => $post_list,
           'pager' => $pager
       ]);
+    }
+
+    private function add_input_markdown(){ // (1)
+        $data = $this->request->getPost();
+        if (array_key_exists("content", $data)){  // (2)
+            $content = $data['content'];
+            $content = str_replace(PHP_EOL, "  " . PHP_EOL, $content); // (3)
+            $data['html_content'] = Markdown::defaultTransform($content);  // (4)
+        }
+
+        return $data;
     }
 }

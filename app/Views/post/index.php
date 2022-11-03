@@ -13,7 +13,7 @@ foreach($post_list as $post){
                 <div class="meta mb-1">
                     <span class="date"><?= $post['created_at'] ?></span> <!-- (3) -->
                     <!-- <span class="comment"><a href="<?= site_url("/post/show/{$post['post_id']}#comment") ?>">4 comments</a></span></div> -->  <!-- (4) -->
-                <div class="intro"><?= $post['content'] ?></div>  <!-- (5) -->
+                <div class="intro"><?= show_content($post['html_content'])  ?></div>  <!-- (5) -->
                 <a class="more-link" href="<?= site_url("/post/show/{$post['post_id']}/#content") ?>">Read more &rarr;</a>  <!-- (6) -->
             </div><!--//media-body-->
         </div><!--//media-->
@@ -24,3 +24,13 @@ foreach($post_list as $post){
 <?php $pager->setPath("/post"); ?>
 <?= $pager->links() ?>
 <?= $this->endSection() ?>
+
+<?php
+function show_content($content){
+    $content = strip_tags($content); // (1)
+    if (mb_strlen($content) > 100){ // (2)
+        $content = mb_substr($content, 0,100); // (3)
+    }
+    return $content;
+}
+?>
