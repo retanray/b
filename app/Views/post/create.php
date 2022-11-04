@@ -11,8 +11,9 @@
     </div>
     <div class="form-group">
         <label for="content">내용을 입력하세요</label>
-        <textarea name="content" class="form-control" id="content" rows="10" required><?= $post_data['content'] ?? "" ?></textarea>
+        <textarea style="height:auto;" name="content" class="form-control" id="content" rows="10" required><?= $post_data['content'] ?? "" ?></textarea>
     </div>
+    <p></p>
     <p style="text-align: right;">
         <input type="submit" class="btn btn-primary" value="저장">
         <a href="/post/" class="btn btn-info">취소</a>
