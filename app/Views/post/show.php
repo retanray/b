@@ -10,5 +10,14 @@
 
 <div class="blog-post-body">
     <?= $post['html_content'] ?>
+    <?php if ($isAuthor) : // (1) ?>
+    <div style="text-align: right;">
+        <form method="POST" action="/post/delete"> <!-- (2) -->
+            <a href="/post/edit/<?= $post['post_id'] ?>" class="btn btn-info">수정</a>  <!-- (3) -->
+            <input type="hidden" name="post_id" value="<?= $post['post_id']?>" />  <!-- (4) -->
+            <input type="submit" class="btn btn-danger" value="삭제">  <!-- (5) -->
+        </form>
+    </div>
+    <?php endif ?>
 </div><!--//blog-comments-section-->
 <?= $this->endSection() ?>

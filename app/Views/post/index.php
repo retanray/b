@@ -23,6 +23,11 @@ foreach($post_list as $post){
 ?>
 <?php $pager->setPath("/post"); ?>
 <?= $pager->links() ?>
+<?php if ($isLogin) : ?>
+    <p style="text-align: right;">
+        <a href="/post/create" class="btn btn-primary">글쓰기</a>
+    </p>
+<?php endif ?>
 <?= $this->endSection() ?>
 
 <?php

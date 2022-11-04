@@ -5,10 +5,15 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 use App\Models\Posts;
 use Michelf\Markdown;
+use App\helpers\LoginHelper;
 
 class Post extends BaseController
 {
     public function create() {
+      if (LoginHelper::isLogin() === false) { // (1)
+        return $this->response->redirect("/post");
+      }
+
       if($this->request->getMethod() === "get"){
         return view("/post/create");
       }
@@ -16,6 +21,7 @@ class Post extends BaseController
       $model = new Posts();
       //$post_id = $model->insert($this->request->getPost());
       $data = $this->add_input_markdown();
+      $data['author'] = LoginHelper::memberId();
       $post_id = $model->insert($data);
 
       if($post_id) {
@@ -35,17 +41,30 @@ class Post extends BaseController
         return $this->response->redirect("/post");
       }
 
+      $isAuthor = LoginHelper::isLogin() && $post['author'] == LoginHelper::memberId();
+
       return view("/post/show", [
-        'post' => $post
+        'post' => $post,
+        'isAuthor' => $isAuthor
       ]);
     }
 
     public function edit($post_id){
+      if (LoginHelper::isLogin() === false) { // (1)
+        return $this->response->redirect("/post");
+      }
+
       $model = new Posts();
       $post = $model->find($post_id);
+      
       if(!$post){
         return $this->response->redirect("/post");
       } 
+
+      if ($post['author'] != LoginHelper::memberId()){ // (1)
+          return $this->response->redirect("/post");
+      }
+
 
       if($this->request->getMethod() === "get"){
         return view("/post/create", [
@@ -67,6 +86,10 @@ class Post extends BaseController
     }
 
     public function delete(){
+      if (LoginHelper::isLogin() === false) { // (1)
+        return $this->response->redirect("/post");
+      }
+
       if($this->request->getMethod() !== "post"){
         return $this->response->redirect("/post");
       }
@@ -77,6 +100,10 @@ class Post extends BaseController
       if(!$post){          
         return $this->response->redirect("/post");
       }        
+
+      if ($post['author'] != LoginHelper::memberId()){
+          return $this->response->redirect("/post");
+      }
 
       $model->delete($post_id);
       return $this->response->redirect("/post");      
@@ -92,7 +119,8 @@ class Post extends BaseController
 
       return view("post/index", [
           'post_list' => $post_list,
-          'pager' => $pager
+          'pager' => $pager,
+          'isLogin' => LoginHelper::isLogin()
       ]);
     }
 
