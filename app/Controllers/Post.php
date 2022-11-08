@@ -1,11 +1,11 @@
 <?php
-
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Models\Posts;
 use Michelf\Markdown;
 use App\helpers\LoginHelper;
+use App\Services\PostService;
 
 class Post extends BaseController
 {
@@ -18,18 +18,20 @@ class Post extends BaseController
         return view("/post/create");
       }
 
-      $model = new Posts();
+      //$model = new Posts();
       //$post_id = $model->insert($this->request->getPost());
-      $data = $this->add_input_markdown();
-      $data['author'] = LoginHelper::memberId();
-      $post_id = $model->insert($data);
+      //$data = $this->add_input_markdown();
+      //$data['author'] = LoginHelper::memberId();
+      //$post_id = $model->insert($data);
 
-      if($post_id) {
-        $this->response->redirect("/post/show/$post_id");
+      $data = PostService::factory()->create($this->request->getPost(), LoginHelper::memberId());
+
+      if($data[0]) {
+        $this->response->redirect("/post/show/$data[1]");
       } else {
         return view("/post/create", [
           'post_data' =>  $this->request->getPost(),
-          'errors' => $model->errors()
+          'errors' => $data[2]
         ]);
       }
     }
@@ -73,14 +75,16 @@ class Post extends BaseController
       }
 
       //$isSuccess = $model->update($post_id, $this->request->getPost());
-      $data = $this->add_input_markdown();
-      $isSuccess = $model->update($post_id, $data);
-      if ($isSuccess){
+      
+      //$data = $this->add_input_markdown();
+      //$isSuccess = $model->update($post_id, $data);
+      $isSuccess = PostService::factory()->edit($post_id, $this->request->getPost());
+      if ($isSuccess[0]){
           $this->response->redirect("/post/show/$post_id");
       }else{
           return view("/post/create", [
               'post_data' => $this->request->getPost(),
-              'errors' => $model->errors()
+              'errors' => $isSuccess[2]
           ]);
       }
     }
@@ -124,14 +128,14 @@ class Post extends BaseController
       ]);
     }
 
-    private function add_input_markdown(){ // (1)
-        $data = $this->request->getPost();
-        if (array_key_exists("content", $data)){  // (2)
-            $content = $data['content'];
-            $content = str_replace(PHP_EOL, "  " . PHP_EOL, $content); // (3)
-            $data['html_content'] = Markdown::defaultTransform($content);  // (4)
-        }
+    // private function add_input_markdown(){ // (1)
+    //     $data = $this->request->getPost();
+    //     if (array_key_exists("content", $data)){  // (2)
+    //         $content = $data['content'];
+    //         $content = str_replace(PHP_EOL, "  " . PHP_EOL, $content); // (3)
+    //         $data['html_content'] = Markdown::defaultTransform($content);  // (4)
+    //     }
 
-        return $data;
-    }
+    //     return $data;
+    // }
 }
