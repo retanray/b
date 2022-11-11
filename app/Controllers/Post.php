@@ -1,39 +1,39 @@
 <?php
 namespace App\Controllers;
 
-use App\Controllers\BaseController;
-use App\Models\Posts;
-use Michelf\Markdown;
 use App\helpers\LoginHelper;
+use CodeIgniter\Controller;
+
+use App\Models\Posts;
 use App\Services\PostService;
 
-class Post extends BaseController
+class Post extends Controller
 {
     public function create() {
       if (LoginHelper::isLogin() === false) { // (1)
         return $this->response->redirect("/post");
-      }
+      }      
 
       if($this->request->getMethod() === "get"){
         return view("/post/create");
       }
 
-      //$model = new Posts();
-      //$post_id = $model->insert($this->request->getPost());
-      //$data = $this->add_input_markdown();
-      //$data['author'] = LoginHelper::memberId();
-      //$post_id = $model->insert($data);
-
-      $data = PostService::factory()->create($this->request->getPost(), LoginHelper::memberId());
-
-      if($data[0]) {
-        $this->response->redirect("/post/show/$data[1]");
-      } else {
-        return view("/post/create", [
-          'post_data' =>  $this->request->getPost(),
-          'errors' => $data[2]
-        ]);
+      list($create_success, $post_id, $errors) =
+        PostService::factory()
+        ->create(
+          $this->request->getPost(),
+          LoginHelper::memberId()
+        );
+      if ($create_success){
+        return $this->response->redirect("/post/show/$post_id");
       }
+
+      $postEntity = new PostEntity();
+      $postEntity->fill($this->request->getPost());
+      return view("/post/create", [
+        'post_data' => $postEntity,
+        'errors' => $errors
+      ]);
     }
 
     public function show($post_id){
